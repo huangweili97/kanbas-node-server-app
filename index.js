@@ -10,18 +10,25 @@ import assignmentRoutes from "./Kanbas/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kanbas/Enrollments/routes.js";
 import QuizRoutes from "./Kanbas/Quizs/routes.js";
 import mongoose from "mongoose";
-import "dotenv/config";
+
 
 // const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kanbas"
 // mongoose.connect(CONNECTION_STRING);
+require('dotenv').config();
 
-mongoose
-  .connect(process.env.MONGO_CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error("MongoDB Connection Error:", err));
+const mongoUri = process.env.MONGO_CONNECTION_STRING;
+
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to MongoDB Atlas');
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
+
+
+
 
 
 const app = express(); //这里的 express() 是一个函数，调用它会生成一个应用实例 app
