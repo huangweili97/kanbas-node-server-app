@@ -37,6 +37,7 @@ app.use(
     credentials: true,
     origin: (origin, callback) => {
       const allowedOrigins = [
+        "https://a6--thriving-concha-9edf3c.netlify.app",
         "http://localhost:3000",
         "http://localhost:3001",
         process.env.NETLIFY_URL, // 动态从环境变量中加载的来源
