@@ -1,32 +1,30 @@
-
 import * as dao from "./dao.js";
+import * as courseDao from "../Courses/dao.js";
+import * as enrollmentsDao from "../Enrollments/dao.js";
 
 export default function EnrollmentsRoutes(app) {
-  // Get all enrollments for a specific user
-  app.get("/api/enrollments/:userId", (req, res) => {
-    const { userId } = req.params;
-    const enrollments = dao.findEnrollmentsForUser(userId);
-    res.send(enrollments);
-  });
 
-  // Enroll a user in a course
-  app.post("/api/enrollments", (req, res) => {
-    const { userId, courseId } = req.body;
-    try {
-      const newEnrollment = dao.enrollUserInCourse(userId, courseId);
-      res.status(201).send(newEnrollment);
-    } catch (error) {
-      res.status(400).send({ error: error.message });
+  // 返回指定用户已经注册的所有课程
+  const findCoursesForUser = async (req, res) => {
+    const currentUser = req.session["currentUser"];
+    if (!currentUser) {
+      res.sendStatus(401);
+      return;
     }
-  });
+    if (currentUser.role === "ADMIN") {
+      const courses = await courseDao.findAllCourses();
+      res.json(courses);
+      return;
+    }
+    let { uid } = req.params;
+    if (uid === "current") {
+      uid = currentUser._id;
+    }
+    const courses = await enrollmentsDao.findCoursesForUser(uid);
+    res.json(courses);
+  };
+  app.get("/api/users/:uid/courses", findCoursesForUser);
 
-
-
-  app.delete("/api/enrollments/:userId/:courseId", (req, res) => {
-    const { userId, courseId } = req.params;
-    dao.unenrollUserFromCourse(userId, courseId);
-    res.sendStatus(204);
-  });
-
+  
   
 }
